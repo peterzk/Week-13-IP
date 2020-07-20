@@ -1,0 +1,480 @@
+---
+  title: "Week 12 IP"
+author: "Peter Kiragu"
+date: "7/10/2020"
+output:
+  pdf_document: default
+html_document: default
+---
+  
+
+## 1. Introduction
+
+#The goal of this analysis is to conduct explanatory data analysis to reveals patterns in the data.
+
+#The metric for success is getting meaning information that allows us to understand the variables in our dataset.
+
+### 1.1 Context
+
+#A Kenyan entrepreneur has created an online cryptography course and would want to advertise it on her blog. She currently targets audiences originating from various countries. In the past, she ran ads to advertise a related course on the same blog and collected data in the process. She would now like to employ your services as a Data Science Consultant to help her identify which individuals are most likely to click on her ads. 
+
+## 2. Reading & Previewing Data
+
+
+
+
+# First we we need to import the dataset
+
+advert_data <- read.csv("advertising.csv")
+
+# Previewing the top of out data
+
+head(advert_data)
+
+# Previewing the bottom of out data
+
+tail(advert_data)
+
+
+
+## 3. Checking Our Data
+
+
+
+
+# Checking the class of the object "advert_data"
+
+class(advert_data)
+
+# Our object is a data frame
+
+# Checking the dimension of our dataset
+
+dim(advert_data)
+
+# Our dataset has 1000 rows and 10 columns
+
+# Checking the structure of our data frame
+
+str(advert_data)
+
+# Our data frame has integer, number and character values
+
+
+# Getting the names of the columns we will be working with
+
+colnames(advert_data)
+
+# "Daily.Time.Spent.on.Site" , "Age", "Area.Income", "Daily.Internet.Usage", "Ad.Topic.Line"
+# "City", "Male", "Country", "Timestamp", "Clicked.on.Ad" 
+
+
+
+## 4. Cleaning Data
+
+
+
+# function for adjusting plot size
+
+set_plot_dimensions <- function(width_choice, height_choice) {
+  options(repr.plot.width = width_choice, repr.plot.height = height_choice)
+}
+
+
+# Checking for duplicated values in our data set
+
+anyDuplicated(advert_data)
+
+
+# Since there are no duplicated values, no action is required
+
+
+# Checking if our dataset has any missing values
+
+sum(is.na(advert_data))
+
+# There are no null values in the dataset so no action is required
+
+
+# Checking for outliers in our dataset
+
+# To check for outliers, we only need the numerical columns
+# Getting numeric columns from the advert_data
+nums <- unlist(lapply(advert_data, is.numeric)) 
+
+numerical_cols <- advert_data[ ,nums]
+
+head(numerical_cols)
+
+# We can see that we have 6 numeric columns
+#
+
+# Plotting the boxplot to visualize the outliers in the dataset
+
+boxplot(numerical_cols, horizontal=FALSE, main="Advertising Data")
+
+# Only the Area income column has some outliers of people earning below 20,000
+
+
+## 4. Exploratory Data Analysis
+
+### 4.1 Univariate EDA
+
+
+# Getting the mean of the numeric columns
+
+colMeans(numerical_cols)
+
+
+
+# Creating a function for getting the mode 
+
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+# Getting mode for time spent on site
+
+getmode(numerical_cols$Daily.Time.Spent.on.Site)
+
+# Getting mode for age
+
+getmode(numerical_cols$Age)
+
+# Getting mode for Area Income
+
+getmode(numerical_cols$Area.Income)
+
+# Getting mode for daily internet usage
+
+getmode(numerical_cols$Daily.Internet.Usage)
+
+# Getting mode of male variable
+
+getmode(numerical_cols$Male)
+
+# Getting mode for clicked on ad variable
+
+getmode(numerical_cols$Clicked.on.Ad)
+
+# Finding the median income
+
+median(numerical_cols$Area.Income)
+
+# Finding median age
+
+median(numerical_cols$Age)
+
+# Finding median daily internet usage
+
+median(numerical_cols$Daily.Internet.Usage)
+
+# Finding media for time spent on site
+
+median(numerical_cols$Daily.Time.Spent.on.Site)
+
+
+# Finding min & max area income
+
+min(numerical_cols$Area.Income)
+
+max(numerical_cols$Area.Income)
+
+# Finding min & max daily time spent on site
+
+min(numerical_cols$Daily.Time.Spent.on.Site)
+
+max(numerical_cols$Daily.Time.Spent.on.Site)
+
+# Finding min & max daily internet usage
+
+min(numerical_cols$Daily.Internet.Usage)
+
+max(numerical_cols$Daily.Internet.Usage)
+
+# Finding min & max age
+
+min(numerical_cols$Age)
+
+max(numerical_cols$Age)
+
+
+# Getting 1st quantile for age
+
+quantile(numerical_cols$Age, 0.25)
+
+# Getting 2nd quantile for age
+
+quantile(numerical_cols$Age, 0.5)
+
+# Getting 3rd quantile for age
+
+quantile(numerical_cols$Age, 0.75)
+
+# Getting inter-quantile range for age
+
+IQR(numerical_cols$Age)
+
+
+
+# Getting 1st quantile for age
+
+quantile(numerical_cols$Area.Income, 0.25)
+
+# Getting 2nd quantile for age
+
+quantile(numerical_cols$Area.Income, 0.5)
+
+# Getting 3rd quantile for age
+
+quantile(numerical_cols$Area.Income, 0.75)
+
+# Getting inter-quantile range for age
+
+IQR(numerical_cols$Area.Income)
+
+
+# Finding std deviation
+
+sd(numerical_cols$Area.Income)
+
+# Getting variance
+
+var(numerical_cols$Area.Income)
+
+# Plotting the histogram for the numerical variables
+
+par(mfrow=c(2, 2))
+
+
+for (i in 1:6) {
+  hist(numerical_cols[, i], main = names(numerical_cols)[i], xlab = names(numerical_cols)[i])
+}
+
+
+### 4.2 Bivariate
+
+# Selecting our columns and assigning variable names to the columns
+
+age <- advert_data$Age
+
+income <- advert_data$Area.Income
+
+male <- advert_data$Male
+
+city <- advert_data$City
+
+time_on_site <- advert_data$Daily.Time.Spent.on.Site
+
+internet_usage <- advert_data$Daily.Internet.Usage
+
+country <- advert_data$Country
+
+clicked_ad <- advert_data$Clicked.on.Ad
+
+topic_line <- advert_data$Ad.Topic.Line
+
+time <- advert_data$Timestamp
+
+
+# Scatter plot for age against time spent on site
+
+plot(time_on_site, age, xlab = "Time Spent on Site", ylab = "Age")
+
+
+# Scatter plot for internet usage against male variable
+
+plot(male, internet_usage, xlab = "Male", ylab = "Internet Usage")
+
+
+# Scatter plot for internet usage against time spent on site
+
+plot(time_on_site, internet_usage, xlab = "Time Spent on Site", ylab = "Internet Usage")
+
+
+# Scatter plot for time income against time spent on site
+
+plot(time_on_site, income, xlab = "Time Spent on Site", ylab = "Income")
+
+
+# Scatter plot for income against time spent on site
+
+plot(clicked_ad, income, xlab = "Time Spent on Site", ylab = "Income")
+
+
+# Getting the correlation between our numeric variables
+
+cor(numerical_cols)
+
+
+# Getting covariance for our numeric variables
+
+cov(numerical_cols)
+
+
+library(ggcorrplot)
+set_plot_dimensions(6, 6)
+
+corr_value <- cor(numerical_cols)
+ggcorrplot(round(corr_value, 2) ,lab = T,type = 'lower')
+
+
+## Feature Engineering
+
+# split timestamp column into year, month, day, and hour
+
+advert_data$Year <- format(as.POSIXct(advert_data$Timestamp, format="%Y-%m-%d %H:%M:%S"), "%Y")
+advert_data$Month <- format(as.POSIXct(advert_data$Timestamp, format="%Y-%m-%d %H:%M:%S"), "%m")
+advert_data$Day <- format(as.POSIXct(advert_data$Timestamp, format="%Y-%m-%d %H:%M:%S"), "%d")
+advert_data$Hour <- format(as.POSIXct(advert_data$Timestamp, format="%Y-%m-%d %H:%M:%S"), "%H")
+
+head(advert_data)
+
+# Deleting columns not needed for modeling
+
+advert_data2 <- advert_data
+
+advert_data2[, c(5, 9)] <- NULL
+
+head(advert_data2)
+
+dim(advert_data2)
+
+# move the 'clicked_on_ad' column to the end
+
+advert_data2 <- advert_data2[, c(1:7, 9:12, 8)]
+
+head(advert_data2)
+
+dim(advert_data2)
+
+
+# Label Encoding the categorical variables
+
+library(CatEncoders)
+
+
+for (i in c(5,7)) {
+  
+  encode = LabelEncoder.fit(advert_data2[,i])
+  advert_data2[,i] = transform(encode,advert_data2[,i])
+}
+
+head(advert_data2)
+
+
+# Removing the year column
+
+advert_data2[, 8] <- NULL
+
+head(advert_data2)
+
+
+# Normalizing the dataset 
+normalize <- function(x){
+  return ((x-min(x)) / (max(x)-min(x)))
+}
+
+
+advert_data2$Age <- normalize(advert_data2$Age)
+
+advert_data2$Area.Income <- normalize(advert_data2$Area.Income )
+
+advert_data2$City <- normalize(advert_data2$City)
+
+advert_data2$Daily.Time.Spent.on.Site <- normalize(advert_data2$Daily.Time.Spent.on.Site)
+
+advert_data2$Daily.Internet.Usage <- normalize(advert_data2$Daily.Internet.Usage)
+
+advert_data2$Country <- normalize(advert_data2$Country)
+
+head(advert_data2)
+
+
+random <- runif(1000)
+
+advert_data2 <- advert_data2[order(random),]
+
+head(advert_data2)
+
+# splitting our data into training and testing sets, 70:30
+
+library(lattice)
+library(caret)
+
+intrain <- createDataPartition(y = advert_data2$Clicked.on.Ad, p = 0.7, list = FALSE)
+
+training <- advert_data2[intrain,]
+
+testing <- advert_data2[-intrain,]
+
+
+
+## Supervised Learning
+
+
+## Imprementing K-Nearest Neighbor
+
+
+
+# Extracting the features 
+
+train <- training[, -10]
+test <- testing[, -10]
+
+# Extracting target variable
+
+train_click <- training[,11]
+test_click <- testing[,11]
+
+# Modeling our data using KNN
+
+library(class)    
+require(class)
+
+model <- knn(train = train, test = test, cl = train_click, k = 30)
+
+
+# Creating a confusion matrix
+
+con_matrix <- table(test_click, model)
+
+con_matrix
+
+# Getting accuracy of our model
+
+model_acc <- sum(diag(con_matrix)/(sum(rowSums(con_matrix)))) * 100
+
+print(paste("KNN accuracy score:", model_acc))
+
+
+
+## Decision Trees
+
+
+library(rpart)
+library(rpart.plot)
+
+
+m <- rpart(Clicked.on.Ad ~ ., data = training, method = "class")
+
+rpart.plot(m)
+
+
+p <- predict(m, testing, type = "class")
+
+# Creating the confusion matrix
+d_con <-table(p, testing$Clicked.on.Ad)
+
+d_con
+
+
+# Getting accuracy of our model
+
+model_acc1 <- sum(diag(d_con)/(sum(rowSums(d_con)))) * 100
+
+print(paste("Decision Tree accuracy score:", model_acc1))
+
+
+
