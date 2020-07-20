@@ -11,15 +11,6 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
-# Function for adjusting plot size
-
-set_plot_dimensions <- function(width_choice, height_choice) {
-    options(repr.plot.width = width_choice, repr.plot.height = height_choice)
-}
-```
-
-
 ## 1. Problem Definition
 
 * The goal is to use clustering techniques to understand characteristics of customer groups.
